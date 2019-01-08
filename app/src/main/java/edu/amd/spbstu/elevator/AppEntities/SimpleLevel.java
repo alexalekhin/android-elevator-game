@@ -2,6 +2,7 @@ package edu.amd.spbstu.elevator.AppEntities;
 
 import android.graphics.*;
 
+import edu.amd.spbstu.elevator.AppEntities.Game.Bitmaps;
 import edu.amd.spbstu.elevator.AppEntities.Game.Game;
 import edu.amd.spbstu.elevator.AppEntities.Game.GameView;
 import edu.amd.spbstu.elevator.R;
@@ -15,7 +16,7 @@ public class SimpleLevel implements Level {
     private Game game;
 
 
-    public ArrayList<Person> persons;
+    private ArrayList<Person> persons;
     private Elevator elevator;
     private ArrayList<Position> elevatorPositions;
     private ArrayList<Floor> floors;
@@ -23,8 +24,8 @@ public class SimpleLevel implements Level {
 
     private Bitmap bmp_background;
     private Matrix matrix;
-    public Integer personsCount;
-    int floorsNumber;
+    private Integer personsCount;
+    private int floorsNumber;
     private float happinessLevel;
     private RectF happinessLevelRect;
     private float angerLevel;
@@ -36,11 +37,11 @@ public class SimpleLevel implements Level {
     static public final int LANGUAGE_RUS = 1;
     static public final int LANGUAGE_UNKNOWN = 2;
 
-    Paint angerPaint;
-    Paint happinessPaint;
-    Paint neutralPaint;
+    private Paint angerPaint;
+    private Paint happinessPaint;
+    private Paint neutralPaint;
 
-    Paint blackRectPaint;
+    private Paint blackRectPaint;
 
     public SimpleLevel(Game game, GameView gameView, int maxPersons, Float maxAnger, int floorsNumber) {
         this.game = game;
@@ -70,12 +71,19 @@ public class SimpleLevel implements Level {
                 Floor f;
                 randomFloorBmpIdx = new Random().nextInt((floorBmpMax - floorBmpMin)) + floorBmpMin;
                 Bitmap floorBmp;
-                if (randomFloorBmpIdx == 0) {
-                    floorBmp = gameView.getBmps().bmpFloor1;
-                } else if (randomFloorBmpIdx == 1) {
-                    floorBmp = gameView.getBmps().bmpFloor2;
-                }else {
-                    floorBmp = gameView.getBmps().bmpFloor3;
+                switch (randomFloorBmpIdx) {
+                    case 0:
+                        floorBmp = gameView.getBmps().bmpFloor1;
+                        break;
+                    case  1:
+                        floorBmp = gameView.getBmps().bmpFloor2;
+                        break;
+                    case  2:
+                        floorBmp = gameView.getBmps().bmpFloor3;
+                        break;
+                        default:
+                            floorBmp = gameView.getBmps().bmpFloor1;
+                    break;
                 }
                 if (i == 0) {
                     f = new Floor(gameView, 0, 0, floorsNumber,
@@ -106,6 +114,10 @@ public class SimpleLevel implements Level {
             int randomStartFloor;
             int randomNeededFloor;
 
+            int personBmpMin = 0;
+            int personBmpMax = 4;
+            int randomPersonBmpIdx;
+
             //Basic set of persons
             for (int i = 0; i < floorsNumber; ++i) {
                 randomStartFloor = i;
@@ -115,8 +127,34 @@ public class SimpleLevel implements Level {
                     randomNeededFloor %= floorsNumber;
                 }
 
+                randomPersonBmpIdx = new Random().nextInt((personBmpMax - personBmpMin)) + personBmpMin;
+                Bitmap personBmpLeft;
+                Bitmap personBmpRight;
+                switch (randomPersonBmpIdx) {
+                    case 0:
+                        personBmpLeft = gameView.getBmps().bmpFemLeft;
+                        personBmpRight = gameView.getBmps().bmpFemRight;
+                        break;
+                    case  1:
+                        personBmpLeft = gameView.getBmps().bmpMLeft;
+                        personBmpRight = gameView.getBmps().bmpMRight;
+                        break;
+                    case  2:
+                        personBmpLeft = gameView.getBmps().bmpOldFemLeft;
+                        personBmpRight = gameView.getBmps().bmpOldFemRight;
+                        break;
+                    case  3:
+                        personBmpLeft = gameView.getBmps().bmpOldMLeft;
+                        personBmpRight = gameView.getBmps().bmpOldMRight;
+                        break;
+                    default:
+                        personBmpLeft = gameView.getBmps().bmpOldMLeft;
+                        personBmpRight = gameView.getBmps().bmpOldMRight;
+                        break;
+                }
+
                 Person p = new Person(gameView, 0.0f, 0.0f,
-                        gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
+                        personBmpRight, personBmpLeft,
                         elevator, floors.get(randomStartFloor), floors.get(randomNeededFloor));
 
                 persons.add(p);
@@ -132,8 +170,34 @@ public class SimpleLevel implements Level {
                     randomNeededFloor %= floorsNumber;
                 }
 
+                randomPersonBmpIdx = new Random().nextInt((personBmpMax - personBmpMin)) + personBmpMin;
+                Bitmap personBmpLeft;
+                Bitmap personBmpRight;
+                switch (randomPersonBmpIdx) {
+                    case 0:
+                        personBmpLeft = gameView.getBmps().bmpFemLeft;
+                        personBmpRight = gameView.getBmps().bmpFemRight;
+                        break;
+                    case  1:
+                        personBmpLeft = gameView.getBmps().bmpMLeft;
+                        personBmpRight = gameView.getBmps().bmpMRight;
+                        break;
+                    case  2:
+                        personBmpLeft = gameView.getBmps().bmpOldFemLeft;
+                        personBmpRight = gameView.getBmps().bmpOldFemRight;
+                        break;
+                    case  3:
+                        personBmpLeft = gameView.getBmps().bmpOldMLeft;
+                        personBmpRight = gameView.getBmps().bmpOldMRight;
+                        break;
+                    default:
+                        personBmpLeft = gameView.getBmps().bmpOldMLeft;
+                        personBmpRight = gameView.getBmps().bmpOldMRight;
+                        break;
+                }
+
                 Person p = new Person(gameView, 0.0f, 0.0f,
-                        gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
+                        personBmpRight, personBmpLeft,
                         elevator, floors.get(randomStartFloor), floors.get(randomNeededFloor));
 
                 persons.add(p);
@@ -213,8 +277,8 @@ public class SimpleLevel implements Level {
         updateEmotions();
     }
 
-    public void updateEmotions() {
-        float step = 0.0f;
+    private void updateEmotions() {
+        float step;
         if (gameView.m_app.getScreenWidth() / 3 * happinessLevel / happinessLevelThreshold < gameView.m_app.getScreenWidth() / 3)
             step = gameView.m_app.getScreenWidth() / 3 * happinessLevel / happinessLevelThreshold;
         else
@@ -297,11 +361,11 @@ public class SimpleLevel implements Level {
         personsCount = pCount;
     }
 
-    public boolean checkForLose() {
+    private boolean checkForLose() {
         return angerLevel >= angerLevelThreshold;
     }
 
-    public boolean checkForWin() {
+    private boolean checkForWin() {
         return (personsCount == 0);
     }
 
@@ -311,10 +375,8 @@ public class SimpleLevel implements Level {
             if (p.onTouch(x, y, eventType))
                 return true;
         }
-        if (elevator.onTouch(x, y, eventType))
-            return true;
+        return elevator.onTouch(x, y, eventType);
 
-        return false;
     }
 }
 

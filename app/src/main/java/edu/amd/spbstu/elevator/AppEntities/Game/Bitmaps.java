@@ -15,6 +15,12 @@ public class Bitmaps {
     public Bitmap bmpMLeft;
     public Bitmap bmpMRight;
 
+    public Bitmap bmpOldFemLeft;
+    public Bitmap bmpOldFemRight;
+
+    public Bitmap bmpOldMLeft;
+    public Bitmap bmpOldMRight;
+
     public Bitmap bmpMsg;
     public Bitmap bmpDislike;
 
@@ -24,7 +30,7 @@ public class Bitmaps {
 
     public Bitmap bmpBgObj;
 
-    BitmapFactory.Options options;
+    private BitmapFactory.Options options;
 
     Bitmaps(Resources res) {
         options = new BitmapFactory.Options();
@@ -38,8 +44,15 @@ public class Bitmaps {
 
         bmpFemRight = loadBitmap(res, R.drawable.fem);
         bmpFemLeft = Bitmap.createBitmap(bmpFemRight, 0, 0, bmpFemRight.getWidth(), bmpFemRight.getHeight(), leftMatrix, true);
+
         bmpMRight = loadBitmap(res, R.drawable.m);
         bmpMLeft = Bitmap.createBitmap(bmpMRight, 0, 0, bmpMRight.getWidth(), bmpMRight.getHeight(), leftMatrix, true);
+
+        bmpOldFemLeft = loadBitmap(res, R.drawable.old_fem);
+        bmpOldFemRight= Bitmap.createBitmap(bmpOldFemLeft, 0, 0, bmpOldFemLeft.getWidth(), bmpOldFemLeft.getHeight(), leftMatrix, true);
+
+        bmpOldMLeft = loadBitmap(res, R.drawable.old_m);
+        bmpOldMRight= Bitmap.createBitmap(bmpOldMLeft, 0, 0, bmpOldMLeft.getWidth(), bmpOldMLeft.getHeight(), leftMatrix, true);
 
 
         bmpMsg = loadBitmap(res, R.drawable.speech_bubble);

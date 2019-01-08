@@ -15,35 +15,33 @@ public class Person extends RectF {
     private Bitmap bmpLeft;
     private Bitmap bmpMsg;
     private Bitmap bmpDislike;
-    Paint bad;
-    Paint good;
-    Paint neutral;
+    private Paint bad;
+    private Paint good;
+    private Paint neutral;
 
-    int direction;
+    private int direction;
     //private RectF rect;
     private Matrix matrix;
     private Matrix msgMatrix;
     private float[] vals = new float[9];
     private Matrix DislikeMatrix;
     //scale factors
-    float sx;
-    float sy;
+    private float sx;
+    private float sy;
     /*
      * Movement
      */
-    public static final int ON_SPAWN_POSITION = -3;
-    public static final int MOVING_TO_SPAWN = -2;
-    public static final int ON_WAIT_POSITION = -1;
-    public static final int MOVING_TO_POSITION = 0;
-    public static final int MOVING_WITH_ELEVATOR = 2;
-    public static final int ON_OUT_POSITION = 3;
+    static final int ON_SPAWN_POSITION = -3;
+    static final int MOVING_TO_SPAWN = -2;
+    static final int ON_WAIT_POSITION = -1;
+    static final int MOVING_TO_POSITION = 0;
+    static final int MOVING_WITH_ELEVATOR = 2;
+    private static final int ON_OUT_POSITION = 3;
 
     int state;
-    boolean impactFlag = false;
-    public float STD_SPEED = 0.2f;
+    private float STD_SPEED;
     private double speed;
     private Position destPosition;
-    private Position inElevatorPosition;
     Elevator elevator;
     Floor curFloor;
     Floor neededFloor;
@@ -53,7 +51,7 @@ public class Person extends RectF {
     private Happiness happiness;
     private Anger anger;
 
-    public Person(GameView gameView, float x, float y, Bitmap bmpRight, Bitmap bmpLeft, Elevator elevator, Floor startFloor, Floor neededFloor) {
+    Person(GameView gameView, float x, float y, Bitmap bmpRight, Bitmap bmpLeft, Elevator elevator, Floor startFloor, Floor neededFloor) {
         super();
         this.gameView = gameView;
         sx = ((float) gameView.m_app.getScreenWidth()) / 10 / bmpRight.getWidth();
@@ -110,6 +108,7 @@ public class Person extends RectF {
         //Movement
         this.direction = 1;
         updateSpeed(0.0);
+        STD_SPEED = (float)(gameView.getWidth())/500.0f;
 
         this.destPosition = new Position(curFloor.waitPosition);
         this.state = ON_SPAWN_POSITION;
@@ -124,15 +123,11 @@ public class Person extends RectF {
         return this;
     }
 
-    public Bitmap getBitmap() {
-        return this.bmpRight;
-    }
-
     public Matrix getMatrix() {
         return this.matrix;
     }
 
-    public void updateSpeed(double s) {
+    private void updateSpeed(double s) {
         this.speed = s;
     }
 
@@ -163,7 +158,7 @@ public class Person extends RectF {
         } else if (state == MOVING_TO_POSITION || state == MOVING_TO_SPAWN) {
             if (state == MOVING_TO_SPAWN)
                 msgMatrix.setTranslate(this.centerX(), this.top - bmpMsg.getHeight());
-
+            STD_SPEED = (float)(gameView.getWidth())/3000.0f;
             updateSpeed(STD_SPEED);
             float path = destPosition.left - this.left;
             float dx = (float) speed * time.getLevelTimerDelta();
@@ -326,7 +321,8 @@ public class Person extends RectF {
         return happiness;
     }
 
-    public Anger getAngry() {
+
+    Anger getAngry() {
         return anger;
     }
 }

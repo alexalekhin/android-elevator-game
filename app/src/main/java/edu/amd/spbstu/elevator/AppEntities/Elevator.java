@@ -22,26 +22,21 @@ public class Elevator extends RectF {
      * Movement
      */
     private int direction;
-    Position destPosition;
-    public float STD_SPEED = 1.0f;
+    private Position destPosition;
+    private float STD_SPEED = 1.0f;
     private double speed;
     private ArrayList<Position> elevatorPositions;
-    /*
-     * People
-     * */
-    private static final int maxPersonsInside = 9;
     Person person;
     private ArrayList<Floor> floors;
     private Floor curFloor;
     private int curFloorNum;
     //moving, standing etc
 
-    public static final int WAITING = 0;
-    public static final int MOVING = 1;
+    static final int WAITING = 0;
+    private static final int MOVING = 1;
     private int state;
-    int doorsState;
 
-    public Elevator(GameView gameView, int x, int y, float yScale, Bitmap bmp, Floor floor, ArrayList<Floor> floors, ArrayList<Position> elevatorPositions) {
+    Elevator(GameView gameView, int x, int y, float yScale, Bitmap bmp, Floor floor, ArrayList<Floor> floors, ArrayList<Position> elevatorPositions) {
         super();
         this.gameView = gameView;
         sx = ((float) gameView.m_app.getScreenWidth()) / 3 / bmp.getWidth();
@@ -79,7 +74,7 @@ public class Elevator extends RectF {
         curFloorNum = floor.getNumber();
     }
 
-    void moveY(float path, float dy, int direction) {
+    private void moveY(float path, float dy, int direction) {
         if (direction > 0 && path - direction * dy > 0.0f ||
                 direction < 0 && path - direction * dy < 0.0f)
             this.offset(0.0f, direction * dy);
@@ -95,6 +90,8 @@ public class Elevator extends RectF {
         if (this.state == WAITING) {
             this.speed = 0.0f;
         } else if (this.state == MOVING) {
+            STD_SPEED = (float)(gameView.getWidth())/1000.0f;
+
             this.speed = STD_SPEED;
 
             float path = destPosition.top - this.top;
@@ -182,20 +179,8 @@ public class Elevator extends RectF {
         */
     }
 
-    private RectF getRect() {
-        return this;
-    }
-
-    void openDoors() {
-
-    }
-
     void isTeleportActivated(boolean isActive) {
 
-    }
-
-    public boolean checkPosition(Position p) {
-        return p.getState();
     }
 
     public void onDraw(Canvas c) {
@@ -230,41 +215,23 @@ public class Elevator extends RectF {
                     return true;
                 }
             }
-        } else if (this.state == MOVING) {
-
         }
         return false;
     }
 
-    private Bitmap loadBitmap(Resources res, int ind) {
-        return BitmapFactory.decodeResource(res, ind);
-    }
-
-    public Position getElevatorPosition() {
+    Position getElevatorPosition() {
         return position;
     }
 
-    public int getCurFloorNumber() {
+    int getCurFloorNumber() {
         return curFloorNum;
     }
 
-    public int getState() {
+    int getState() {
         return state;
     }
 
-    public double getSpeed() {
-        return this.speed * sy;
-    }
-
-    public float getSx() {
-        return sx;
-    }
-
-    public float getSy() {
-        return sy;
-    }
-
-    public Floor getCurFloor() {
+    Floor getCurFloor() {
         return this.curFloor;
     }
 }
