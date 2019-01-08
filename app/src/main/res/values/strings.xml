@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Elevator</string>
+    <string name="str_amd_url">https://amd.spbstu.ru/</string>
+    <string name="action_settings" translatable="false">Settings</string>
+    <string name="str_depth">Applied Math Department</string>
+    <string name="str_university1">Peter the Great St.Petersburg</string>
+    <string name="str_university2">Politechnic University</string>
+    <string name="str_toweb">To web site</string>
+    <string name="str_start">Start</string>
+    <string name="str_show">Show</string>
+    <string name="str_pack">Knack pack</string>
+    <string name="str_completed">completed</string>
+    <string name="str_press_to_start">Touch screen to start the game</string>
+    <string name="str_shape_percent">Shape completeness</string>
+    <string name="str_rect_percent">Rect completeness</string>
+    <string name="str_num_objects">Num shapes</string>
+    <string name="str_touch_change_shape">Touch screen to change shape</string>
+
+    <string name="str_num_shapes">Number of shapes</string>
+    <string name="str_desired_number">Desired number</string>
+    <string name="level1" translatable="true">Level 1</string>
+    <string name="language" translatable="true">Language</string>
+    <string name="level2" translatable="true">Level 2</string>
+    <string name="level3" translatable="true">Level 3</string>
+    <string name="game_start" translatable="true">Start The Game:</string>
+    <string name="happiness" translatable="true">Happiness</string>
+    <string name="anger" translatable="true">Anger</string>
+    <string name="help" translatable="true">Help</string>
+
+</resources>
