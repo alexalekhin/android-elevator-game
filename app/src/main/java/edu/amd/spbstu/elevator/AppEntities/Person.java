@@ -1,10 +1,12 @@
 package edu.amd.spbstu.elevator.AppEntities;
 
 import android.graphics.*;
+
 import edu.amd.spbstu.elevator.AmdIntro.AppIntro;
 import edu.amd.spbstu.elevator.AppEntities.Emotions.Anger;
 import edu.amd.spbstu.elevator.AppEntities.Emotions.Happiness;
 import edu.amd.spbstu.elevator.AppEntities.Game.GameView;
+import edu.amd.spbstu.elevator.R;
 
 public class Person extends RectF {
     private GameView gameView;
@@ -21,6 +23,7 @@ public class Person extends RectF {
     //private RectF rect;
     private Matrix matrix;
     private Matrix msgMatrix;
+    private float[] vals = new float[9];
     private Matrix DislikeMatrix;
     //scale factors
     float sx;
@@ -37,7 +40,7 @@ public class Person extends RectF {
 
     int state;
     boolean impactFlag = false;
-    public float STD_SPEED = 0.5f;
+    public float STD_SPEED = 0.2f;
     private double speed;
     private Position destPosition;
     private Position inElevatorPosition;
@@ -50,7 +53,6 @@ public class Person extends RectF {
     private Happiness happiness;
     private Anger anger;
 
-    //TODO curfloor as parameter
     public Person(GameView gameView, float x, float y, Bitmap bmpRight, Bitmap bmpLeft, Elevator elevator, Floor startFloor, Floor neededFloor) {
         super();
         this.gameView = gameView;
@@ -67,10 +69,11 @@ public class Person extends RectF {
         msgMatrix.setTranslate(this.centerX(), this.top - bmpMsg.getHeight());
         //Dislike
         this.DislikeMatrix = new Matrix();
-        DislikeMatrix.setScale(sx, sy);
-//        this.bmpDislike = Bitmap.createBitmap(gameView.getBmps().bmpDislike,
-//                0, 0,
-//                gameView.getBmps().bmpDislike.getWidth(), gameView.getBmps().bmpDislike.getHeight());
+        DislikeMatrix.setScale(sx / 4, sy / 4);
+        this.bmpDislike = Bitmap.createBitmap(gameView.getBmps().bmpDislike,
+                0, 0,
+                gameView.getBmps().bmpDislike.getWidth(), gameView.getBmps().bmpDislike.getHeight(), DislikeMatrix, true);
+
 
         //Text
         this.bad = new Paint();
@@ -155,7 +158,8 @@ public class Person extends RectF {
             msgMatrix.setTranslate(this.centerX(), this.top - bmpMsg.getHeight());
             this.setDestination(curFloor.spawnPosition);
             this.state = MOVING_TO_SPAWN;
-            //anger.increase(1);
+            if (!this.curFloor.getNumber().equals(neededFloor.getNumber()))
+                anger.increase(500);
         } else if (state == MOVING_TO_POSITION || state == MOVING_TO_SPAWN) {
             if (state == MOVING_TO_SPAWN)
                 msgMatrix.setTranslate(this.centerX(), this.top - bmpMsg.getHeight());
@@ -173,6 +177,8 @@ public class Person extends RectF {
                 } else if (destPosition.left == curFloor.waitPosition.left) {
                     this.state = ON_WAIT_POSITION;
                     direction = 1;
+
+
                 } else if (destPosition.left == curFloor.outPosition.left) {
                     this.state = ON_OUT_POSITION;
                     direction = -1;
@@ -182,7 +188,6 @@ public class Person extends RectF {
                     Integer pCount = gameView.m_app.getAppGame().getCurrentLevel().getPersonsCount();
                     gameView.m_app.getAppGame().getCurrentLevel().setPersonsCount(--pCount);
                 }
-                //TODO PLACE ON FINAL POSITION
                 this.set(this.destPosition.left, this.top, this.destPosition.right, this.bottom);
             } else {
                 if (path > 0.0f)
@@ -198,149 +203,7 @@ public class Person extends RectF {
             this.matrix.setTranslate(this.left, this.top);
         }
 
-/*
-        if (this.state == MOVING_TO_POSITION) {esz
-            this.speed = STD_SPEED;
-            float path = destPosition.left - this.left;
-            int direction = path > 0.0f ? 1 : -1;
-            path = Math.abs(path);
-            double dx = direction * speed * time.getLevelTimerDelta() * sx;
-            if ((int) (path) != 0) {
-                if (direction > 0) {
-                    if ((this.left + 2 * dx) <= destPosition.left) {
-                        this.direction = 1;
 
-                        matrix.reset();
-                        matrix.preTranslate( (float)(this.left+ dx),  (float)this.top);
-                        //matrix.preScale(sx, sy);
-
-                        this.offset((float) Math.ceil(dx), (float) 0.0f);
-
-
-                    } else {
-                        if ((int) this.destPosition.left == (int) elevator.getElevatorPosition().left) {
-                            this.direction = -1;
-
-                            matrix.reset();
-                            matrix.preTranslate(elevator.getElevatorPosition().left,
-                                    elevator.getElevatorPosition().bottom - this.height());
-                            //matrix.preScale(sx, sy);
-
-                            this.set(elevator.getElevatorPosition().left,
-                                    elevator.getElevatorPosition().bottom - this.height(),
-                                    this.right,
-                                    elevator.getElevatorPosition().bottom);
-
-                            this.state = MOVING_WITH_ELEVATOR;
-                            this.elevator.person = this;
-
-                        } else {
-                            matrix.reset();
-                            matrix.preTranslate(destPosition.left, this.top);
-                            //matrix.preScale(sx, sy);
-
-                            this.set(destPosition.left, destPosition.bottom - this.height(), this.right, destPosition.bottom);
-
-                            this.state = ON_WAIT_POSITION;
-                        }
-                    }
-                } else {
-                    if ((this.left + 2 * dx) >= destPosition.left) {
-                        this.direction = -1;
-
-                        matrix.reset();
-                        matrix.preTranslate((float) (this.left + dx), (float) this.top);
-                        //matrix.preScale(sx, sy);
-
-                        this.offset((int) Math.ceil(dx), (int) 0.0f);
-
-
-                    } else {
-                        if (this.destPosition.left == elevator.getCurFloor().outPosition.left) {
-
-                            matrix.reset();
-                            matrix.preTranslate(destPosition.left, destPosition.bottom - this.height());
-                            //matrix.preScale(sx, sy);
-
-                            this.set(destPosition.left, destPosition.bottom - this.height(), this.right, destPosition.bottom);
-
-                            this.state = ON_OUT_POSITION;
-                            this.elevator.person = null;
-                        } else {
-                            matrix.reset();
-                            matrix.preTranslate(destPosition.left, destPosition.bottom - this.height());
-                            //matrix.preScale(sx, sy);
-
-                            this.state = ON_WAIT_POSITION;
-                        }
-                    }
-                }
-            } else {
-                if (this.left == elevator.getElevatorPosition().left) {
-                    this.direction = -1;
-
-                    matrix.reset();
-                    matrix.preTranslate(this.left,
-                            elevator.getElevatorPosition().bottom - this.height());
-                    //matrix.preScale(sx, sy);
-
-                    this.set(this.left,
-                            elevator.getElevatorPosition().bottom - this.height(),
-                            this.right,
-                            elevator.getElevatorPosition().bottom);
-
-                    this.state = MOVING_WITH_ELEVATOR;
-                    this.elevator.person = this;
-
-                }
-            }
-
-        } else if (this.state == MOVING_WITH_ELEVATOR) {
-
-            matrix.reset();
-            matrix.preTranslate(this.left, elevator.getElevatorPosition().bottom - this.height());
-            //matrix.preScale(sx, sy);
-
-            this.set(elevator.getElevatorPosition().left,
-                    elevator.getElevatorPosition().bottom - this.height(),
-                    elevator.getElevatorPosition().right,
-                    elevator.getElevatorPosition().bottom);
-
-        } else if (this.state == MOVING_TO_SPAWN) {
-            double dx = direction * speed * time.getLevelTimerDelta() * sx;
-
-            if ((this.left + 2*dx) >= destPosition.left) {
-                this.direction = -1;
-                matrix.reset();
-                matrix.preTranslate((float) (this.left + dx), (float) this.top);
-                //matrix.preScale(sx, sy);
-
-                this.offset((float) Math.ceil(dx), (float) 0.0f);
-
-                msgMatrix.reset();
-                msgMatrix.preTranslate(this.centerX(), this.top - bmpMsg.getHeight() * 2 * sy);
-                //msgMatrix.preScale(2 * sx, 2 * sy);
-            } else {
-                matrix.reset();
-                matrix.preTranslate(this.left, destPosition.bottom - this.height());
-                //matrix.preScale(sx, sy);
-                Integer pCount = gameView.m_app.getAppGame().getCurrentLevel().getPersonsCount();
-                gameView.m_app.getAppGame().getCurrentLevel().setPersonsCount(--pCount);
-                this.state = ON_SPAWN_POSITION;
-
-                //gameView.m_app.getAppGame().getCurrentLevel().persons.remove(this);
-            }
-        } else if (this.state == ON_OUT_POSITION) {
-            this.state = MOVING_TO_SPAWN;
-            this.setDestination(elevator.getCurFloor().spawnPosition);
-            if (curFloor != neededFloor && !impactFlag) {
-                anger.increase(3000);
-                impactFlag = true;
-            }
-        } else if (this.state == ON_WAIT_POSITION) {
-            anger.increase(1);
-        }
-*/
     }
 
     public void onDraw(Canvas c) {
@@ -355,65 +218,58 @@ public class Person extends RectF {
         //Needed floor message
         if (state == ON_WAIT_POSITION) {
             msgMatrix.setTranslate(this.centerX(), this.top - bmpMsg.getHeight());
+            msgMatrix.getValues(vals);
+            float x = vals[Matrix.MTRANS_X];
+            float y = vals[Matrix.MTRANS_Y];
             c.drawBitmap(bmpMsg, msgMatrix, null);
             c.drawText(neededFloor.getNumber().toString(),
-                    this.centerX() + bmpMsg.getWidth() * 4 / 10,
-                    this.top - bmpMsg.getHeight() / 2,
+                    x + bmpMsg.getWidth() * 2 / 5,
+                    y + bmpMsg.getHeight() / 2,
                     neutral);
-            /*
-            if (anger.getLevel() >= 30.0f) {
-                DislikeMatrix.reset();
-                DislikeMatrix.preTranslate(this.centerX() + bmpMsg.getWidth() / 2 * sx, this.top);
-                //DislikeMatrix.preScale(sx / 2, sy / 2);
+
+            if (anger.getLevel() >= 35.0f) {
+                DislikeMatrix.setTranslate(this.right, this.top);
                 c.drawBitmap(bmpDislike, DislikeMatrix, null);
                 if (anger.getLevel() >= 70.0f) {
-                    DislikeMatrix.reset();
-                    DislikeMatrix.preTranslate(this.centerX() + bmpMsg.getWidth() / 2 * sx, this.top + bmpDislike.getHeight() * sy / 2);
+                    DislikeMatrix.setTranslate(this.right + bmpDislike.getWidth() / 3,
+                            this.top + bmpDislike.getHeight());
 
-                    //DislikeMatrix.preScale(sx / 2, sy / 2);
                     c.drawBitmap(bmpDislike, DislikeMatrix, null);
+                    if (anger.getLevel() >= 105.0f) {
+                        DislikeMatrix.setTranslate(this.right + bmpDislike.getWidth() / 2,
+                                this.top + bmpDislike.getHeight() * 2);
+
+                        c.drawBitmap(bmpDislike, DislikeMatrix, null);
+                    }
                 }
             }
-            */
+
         }
-        /*
-        if (state == MOVING_TO_SPAWN && curFloor != neededFloor) {
-            c.drawBitmap(bmpMsg, msgMatrix, null);
-            if (gameView.m_app.getLanguage() == AppIntro.LANGUAGE_RUS)
-                c.drawText("НЕТ!",
-                        this.centerX() + bmpMsg.getWidth() * (2 * sx) / 4,
-                        this.top - bmpMsg.getHeight() * (2 * sy) / 2,
-                        bad);
-            else
-                c.drawText("NO!",
-                        this.centerX() + bmpMsg.getWidth() * (2 * sx) / 4,
-                        this.top - bmpMsg.getHeight() * (2 * sy) / 2,
-                        bad);
-        }
-        */
 
         //Exit message
         if (state == MOVING_TO_SPAWN) {
-            //c.drawBitmap(bmpMsg, msgMatrix, null);
+            c.drawBitmap(bmpMsg, msgMatrix, null);
+            msgMatrix.getValues(vals);
+            float x = vals[Matrix.MTRANS_X];
+            float y = vals[Matrix.MTRANS_Y];
             if (curFloor == neededFloor) {
-//                if (gameView.m_app.getLanguage() == AppIntro.LANGUAGE_RUS)
-//                    c.drawText("ДА!", this.centerX() + bmpMsg.getWidth() * (2 * sx) / 4, this.top - bmpMsg.getHeight() * (2 * sy) / 2, good);
-//                else
-//                    c.drawText("YES!",
-//                            this.centerX() + bmpMsg.getWidth() * (2 * sx) / 4,
-//                            this.top - bmpMsg.getHeight() * (2 * sy) / 2,
-//                            good);
+                //debug
+                if (gameView.m_app.getLanguage() == AppIntro.LANGUAGE_RUS)
+
+                    c.drawText(gameView.getResources().getString(R.string.yes), x + bmpMsg.getWidth() / 4, y + bmpMsg.getHeight() / 2, good);
+                else
+                    c.drawText(gameView.getResources().getString(R.string.yes),
+                            x + bmpMsg.getWidth() / 5, y + bmpMsg.getHeight() / 2,
+                            good);
             } else {
-//                if (gameView.m_app.getLanguage() == AppIntro.LANGUAGE_RUS)
-//                    c.drawText("НЕТ!",
-//                            this.centerX() + bmpMsg.getWidth() * (2 * sx) / 4,
-//                            this.top - bmpMsg.getHeight() * (2 * sy) / 2,
-//                            bad);
-//                else
-//                    c.drawText("NO!",
-//                            this.centerX() + bmpMsg.getWidth() * (2 * sx) / 4,
-//                            this.top - bmpMsg.getHeight() * (2 * sy) / 2,
-//                            bad);
+                if (gameView.m_app.getLanguage() == AppIntro.LANGUAGE_RUS)
+                    c.drawText(gameView.getResources().getString(R.string.no),
+                            x + bmpMsg.getWidth() / 5, y + bmpMsg.getHeight() / 2,
+                            bad);
+                else
+                    c.drawText(gameView.getResources().getString(R.string.no),
+                            x + bmpMsg.getWidth() / 4, y + bmpMsg.getHeight() / 2,
+                            bad);
             }
         }
         //c.drawRect(this, new Paint()); //DEBUG

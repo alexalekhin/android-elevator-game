@@ -25,7 +25,9 @@
     <string name="level3" translatable="true">Level 3</string>
     <string name="game_start" translatable="true">Start The Game:</string>
     <string name="happiness" translatable="true">Happiness</string>
-    <string name="anger" translatable="true">Anger</string>
+    <string name="anger" translatable="true">Discontent</string>
     <string name="help" translatable="true">Help</string>
+    <string name="no" translatable="true">NO!</string>
+    <string name="yes" translatable="true">YES!</string>
 
 </resources>

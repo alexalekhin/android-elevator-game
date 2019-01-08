@@ -1,12 +1,8 @@
 package edu.amd.spbstu.elevator.AppEntities.Game;
 
-import java.util.HashMap;
-
 import android.view.View;
 import edu.amd.spbstu.elevator.AppEntities.Level;
-import edu.amd.spbstu.elevator.AppEntities.Level1;
-import edu.amd.spbstu.elevator.AppEntities.Level2;
-import edu.amd.spbstu.elevator.AppEntities.Level3;
+import edu.amd.spbstu.elevator.AppEntities.SimpleLevel;
 import edu.amd.spbstu.elevator.MainActivity;
 
 
@@ -31,7 +27,6 @@ public class Game {
     /*
      * Game variables
      * */
-    private static final HashMap<String, Level1> levelHashMap = new HashMap<>();
 
     private Level curLevel;
     /*
@@ -47,11 +42,11 @@ public class Game {
         //state = GAME_PAUSE;
         state = GAME_PLAYED;
         if (level == 1)
-            curLevel = new Level1(this, this.gameView, 6, 10000000.0f, 3);
+            curLevel = new SimpleLevel(this, this.gameView, 6, 100.0f, 3);
         if (level == 2)
-            curLevel = new Level2(this, this.gameView, 8, 100.0f, 4);
+            curLevel = new SimpleLevel(this, this.gameView, 20, 100.0f, 4);
         if (level == 3)
-            curLevel = new Level3(this, this.gameView, 32, 1000.0f, 5);
+            curLevel = new SimpleLevel(this, this.gameView, 50, 100.0f, 5);
     }
 
     public void update() {

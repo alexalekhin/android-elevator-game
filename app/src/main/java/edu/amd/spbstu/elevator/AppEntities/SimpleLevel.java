@@ -1,16 +1,19 @@
 package edu.amd.spbstu.elevator.AppEntities;
 
-import android.content.res.Resources;
 import android.graphics.*;
+
 import edu.amd.spbstu.elevator.AppEntities.Game.Game;
 import edu.amd.spbstu.elevator.AppEntities.Game.GameView;
 import edu.amd.spbstu.elevator.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
-public class Level1 implements Level {
+public class SimpleLevel implements Level {
     private GameView gameView;
     private Game game;
+
 
     public ArrayList<Person> persons;
     private Elevator elevator;
@@ -22,12 +25,12 @@ public class Level1 implements Level {
     private Matrix matrix;
     public Integer personsCount;
     int floorsNumber;
-    private Float happinessLevel;
+    private float happinessLevel;
     private RectF happinessLevelRect;
-    private Float angerLevel;
+    private float angerLevel;
     private RectF angerLevelRect;
-    private Float angerLevelThreshold;
-    private Float happinessLevelThreshold;
+    private float angerLevelThreshold;
+    private float happinessLevelThreshold;
 
     static public final int LANGUAGE_ENG = 0;
     static public final int LANGUAGE_RUS = 1;
@@ -39,7 +42,7 @@ public class Level1 implements Level {
 
     Paint blackRectPaint;
 
-    public Level1(Game game, GameView gameView, int maxPersons, Float maxAnger, int floorsNumber) {
+    public SimpleLevel(Game game, GameView gameView, int maxPersons, Float maxAnger, int floorsNumber) {
         this.game = game;
         this.gameView = gameView;
         this.personsCount = maxPersons;
@@ -59,71 +62,86 @@ public class Level1 implements Level {
 
         if (gameView != null) {
 
-            //3 basic floors
-            Floor f0 = new Floor(gameView, 0, 0, 3,
-                    gameView.getBmps().bmpFloor1,
-                    floorsNumber - floors.size());
-            floors.add(f0);
+            int floorBmpMin = 0;
+            int floorBmpMax = 3;
+            int randomFloorBmpIdx;
 
-            Floor f1 = new Floor(gameView, f0.rect.left, f0.rect.bottom, 3,
-                    gameView.getBmps().bmpFloor2,
-                    floorsNumber - floors.size());
-            floors.add(f1);
-            Floor f2 = new Floor(gameView, f1.rect.left, f1.rect.bottom, 3,
-                    gameView.getBmps().bmpFloor3,
-                    floorsNumber - floors.size());
-            floors.add(f2);
+            for (int i = 0; i < floorsNumber; ++i) {
+                Floor f;
+                randomFloorBmpIdx = new Random().nextInt((floorBmpMax - floorBmpMin)) + floorBmpMin;
+                Bitmap floorBmp;
+                if (randomFloorBmpIdx == 0) {
+                    floorBmp = gameView.getBmps().bmpFloor1;
+                } else if (randomFloorBmpIdx == 1) {
+                    floorBmp = gameView.getBmps().bmpFloor2;
+                }else {
+                    floorBmp = gameView.getBmps().bmpFloor3;
+                }
+                if (i == 0) {
+                    f = new Floor(gameView, 0, 0, floorsNumber,
+                            floorBmp,
+                            floorsNumber - floors.size());
+                } else {
+                    f = new Floor(gameView, floors.get(i - 1).rect.left, floors.get(i - 1).rect.bottom, floorsNumber,
+                            floorBmp,
+                            floorsNumber - floors.size());
+                }
+                floors.add(f);
+
+            }
 
             for (Floor f : floors) {
                 int idx = floors.indexOf(f);
-                elevatorPositions.add(idx, new Position(f.rect.right, f.rect.top, gameView.m_app.getScreenWidth(), f.rect.bottom));
+                elevatorPositions.add(idx,
+                        new Position(f.rect.right, f.rect.top,
+                                gameView.m_app.getScreenWidth(), f.rect.bottom));
             }
 
-            elevator = new Elevator(gameView,
-                    (int) (elevatorPositions.get(2).left), (int) (elevatorPositions.get(2).top), 3,
+            elevator = new Elevator(gameView, (int) (elevatorPositions.get(2).left), (int) (elevatorPositions.get(2).top), floorsNumber,
                     gameView.getBmps().bmpElevator,
-                    f2, this.floors, elevatorPositions);
+                    floors.get(2), this.floors, elevatorPositions);
 
-            //f0
-            Person p0_0 = new Person(gameView, 0.0f, 0.0f,
-                    gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
-                    elevator, floors.get(0), floors.get(1));
-            persons.add(p0_0);
-            Person p0_1 = new Person(gameView, p0_0.getRect().right, p0_0.getRect().top,
-                    gameView.getBmps().bmpMRight, gameView.getBmps().bmpMLeft,
-                    elevator, floors.get(0), floors.get(1));
-            persons.add(p0_1);
 
-            //f1
-            Person p1_0 = new Person(gameView, 0.0f, 0.0f,
-                    gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
-                    elevator, floors.get(1), floors.get(0));
-            persons.add(p1_0);
-            Person p1_1 = new Person(gameView, p1_0.getRect().right, p1_0.getRect().top,
-                    gameView.getBmps().bmpMRight, gameView.getBmps().bmpMLeft,
-                    elevator, floors.get(1), floors.get(2));
-            persons.add(p1_1);
+            int floorMin = 0;
+            int randomStartFloor;
+            int randomNeededFloor;
 
-            //f2
-            Person p2_0 = new Person(gameView, 0.0f, 0.0f,
-                    gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
-                    elevator, floors.get(2), floors.get(1));
-            persons.add(p2_0);
-            Person p2_1 = new Person(gameView, p2_0.getRect().right, p2_0.getRect().top,
-                    gameView.getBmps().bmpMRight, gameView.getBmps().bmpMLeft,
-                    elevator, floors.get(2), floors.get(0));
-            persons.add(p2_1);
-
-            for (Person person : persons) {
-                for (Floor f : floors) {
-                    if (person.curFloor.getNumber() == f.number) {
-                        f.persons.add(person);
-                    }
+            //Basic set of persons
+            for (int i = 0; i < floorsNumber; ++i) {
+                randomStartFloor = i;
+                randomNeededFloor = new Random().nextInt((floorsNumber - floorMin)) + floorMin;
+                if (randomStartFloor == randomNeededFloor) {
+                    randomNeededFloor++;
+                    randomNeededFloor %= floorsNumber;
                 }
+
+                Person p = new Person(gameView, 0.0f, 0.0f,
+                        gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
+                        elevator, floors.get(randomStartFloor), floors.get(randomNeededFloor));
+
+                persons.add(p);
+                floors.get(i).persons.add(p);
             }
+
+
+            for (int i = 0; i < (maxPersons - floorsNumber); ++i) {
+                randomStartFloor = new Random().nextInt((floorsNumber - floorMin)) + floorMin;
+                randomNeededFloor = new Random().nextInt((floorsNumber - floorMin)) + floorMin;
+                if (randomStartFloor == randomNeededFloor) {
+                    randomNeededFloor++;
+                    randomNeededFloor %= floorsNumber;
+                }
+
+                Person p = new Person(gameView, 0.0f, 0.0f,
+                        gameView.getBmps().bmpFemRight, gameView.getBmps().bmpFemLeft,
+                        elevator, floors.get(randomStartFloor), floors.get(randomNeededFloor));
+
+                persons.add(p);
+                floors.get(randomStartFloor).persons.add(p);
+            }
+
 
             for (Floor f : floors) {
-                //TODO set people on spawn\start position
                 //set spawn for every floor
                 f.spawnPosition.set(f.spawnPosition.left - f.persons.get(0).height(), f.spawnPosition.bottom - f.persons.get(0).height(),
                         f.spawnPosition.left, f.spawnPosition.bottom);
@@ -138,7 +156,7 @@ public class Level1 implements Level {
             }
 
         }
-        //elevator = new Elevator(gameView, floors.get(2).rect.right, floors.get(2).rect.top, gameView.getResources(), R.drawable.elevator);
+
         time = new Time(System.currentTimeMillis());
         happinessLevel = 0.0f;
         happinessLevelRect = new RectF(0.0f, 0.0f, 0.0f, 0.0f);
@@ -155,11 +173,7 @@ public class Level1 implements Level {
             Floor f = floors.get(i);
             f.update();
         }
-        /*
-        for (Floor f : floors) {
-            f.update();
-        }
-        */
+
         elevator.update(time);
         for (int i = 0; i < persons.size(); ++i) {
             Person p = persons.get(i);
@@ -168,30 +182,32 @@ public class Level1 implements Level {
             }
         }
 
-        /*for (Person p : persons) {
-            if (p != null && p.state != Person.ON_SPAWN_POSITION) {
-                p.update(time);
-            }
-        }*/
 
         angerLevel = 0.0f;
         happinessLevel = 0.0f;
+        int personCount = 0;
 
         for (int i = 0; i < persons.size(); ++i) {
-            Person p = persons.get(i);
             if (persons.size() != 0) {
-                happinessLevel += p.getHappy().getLevel() / persons.size();
-                angerLevel += p.getAngry().getLevel() / persons.size();
+                Person p = persons.get(i);
+                if (p.state == Person.ON_WAIT_POSITION ||
+                        (p.state == Person.MOVING_TO_SPAWN
+                                && !p.curFloor.getNumber().equals(p.neededFloor.getNumber()))) {
+                    personCount++;
+                }
             }
         }
-        /*
-        for (Person p : persons) {
+
+        for (int i = 0; i < persons.size(); ++i) {
             if (persons.size() != 0) {
-                happinessLevel += p.getHappy().getLevel() / persons.size();
-                angerLevel += p.getAngry().getLevel() / persons.size();
+                Person p = persons.get(i);
+                if (p.state == Person.ON_WAIT_POSITION ||
+                        (p.state == Person.MOVING_TO_SPAWN
+                                && !p.curFloor.getNumber().equals(p.neededFloor.getNumber())))
+                    angerLevel += p.getAngry().getLevel() / personCount;
             }
         }
-        */
+
         if (checkForWin())
             game.updateState(Game.GAME_WIN);
         updateEmotions();
@@ -246,32 +262,19 @@ public class Level1 implements Level {
                 p.onDraw(c);
         }
 
-        //c.drawRect(0.0f, 0.0f, gameView.m_app.getScreenWidth() / 3, gameView.m_app.getScreenHeight() / 20, new Paint());
-
-        //angerPaint.getTextBounds(happinessLevel.toString(), 0, happinessLevel.toString().length(), foundBounds);
-        //angerPaint.getTextBounds("Anger:", 0, "Anger:".length(), angerBounds);
-        //angerBounds.offset(0, this.gameView.m_app.getScreenHeight() / 40);
         neutralPaint.setTextSize(gameView.m_app.getScreenHeight() / 40);
         neutralPaint.setColor(Color.WHITE);
 
         angerPaint.setColor(Color.RED);
 
-        //happinessPaint.getTextBounds("Happiness:", 0, "Happiness:".length(), angerBounds);
-        //happinessBounds.offset(0, this.gameView.m_app.getScreenHeight() / 40);
-        //happinessPaint.setTextSize(gameView.m_app.getScreenHeight() / 40);
+
         happinessPaint.setColor(Color.GREEN);
 
-        //c.drawRect(happinessLevelRect, happinessPaint);
         c.drawRect(angerLevelRect, angerPaint);
 
-        if (game.language == LANGUAGE_RUS) {
-            //c.drawText("Комфорт", happinessLevelRect.left, gameView.m_app.getScreenHeight() / 40, neutralPaint);
-            c.drawText("Злость", angerLevelRect.left, gameView.m_app.getScreenHeight() / 40, neutralPaint);
 
-        } else {
-            //c.drawText("Happiness", happinessLevelRect.left, gameView.m_app.getScreenHeight() / 40, neutralPaint);
-            c.drawText("Anger", angerLevelRect.left, gameView.m_app.getScreenHeight() / 40, neutralPaint);
-        }
+        c.drawText(gameView.getResources().getString(R.string.anger), angerLevelRect.left, gameView.m_app.getScreenHeight() / 40, neutralPaint);
+
 
         blackRectPaint.setStyle(Paint.Style.STROKE);
         blackRectPaint.setColor(Color.BLACK);
@@ -310,17 +313,8 @@ public class Level1 implements Level {
         }
         if (elevator.onTouch(x, y, eventType))
             return true;
-        /*
-        for (Position p : elevatorPositions) {
-            if (p.onTouch(x, y, eventType))
-                return true;
-        }
-        */
+
         return false;
     }
-
-
-    private Bitmap loadBitmap(Resources res, int ind) {
-        return BitmapFactory.decodeResource(res, ind);
-    }
 }
+

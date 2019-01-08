@@ -24,7 +24,8 @@
     <string name="level3" translatable="true">Уровень 3</string>
     <string name="game_start" translatable="true">Начать игру:</string>
     <string name="happiness" translatable="true">Комфорт</string>
-    <string name="anger" translatable="true">Злость</string>
+    <string name="anger" translatable="true">Недовольство</string>
     <string name="help" translatable="true">Помощь</string>
-
+    <string name="no" translatable="true">НЕТ!</string>
+    <string name="yes" translatable="true">ДА!</string>
 </resources>

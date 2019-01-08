@@ -51,6 +51,10 @@ public class FailureView extends View {
 
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
     public boolean onTouch(int x, int y, int eventType) {
         m_app.runOnUiThread(new Runnable() {
